@@ -43,5 +43,45 @@ class Query(graphene.ObjectType):
     def resolve_all_answers(root, info, id):
         return Answer.objects.filter(question=id)
 
+# insert
+# class CategoryMutation(graphene.Mutation):
+#     class Arguments:
+#         name = graphene.String(required=True)
+#
+#     category = graphene.Field(CategoryType)
+#
+#     @classmethod
+#     def mutate(cls, root, info, name):
+#         category = Category(name=name)
+#         category.save()
+#         return CategoryMutation(category=category)
 
-schema = graphene.Schema(query=Query)
+# update
+
+
+class CategoryMutation(graphene.Mutation):
+    class Arguments:
+        id = graphene.ID()
+        name = graphene.String(required=True)
+
+    category = graphene.Field(CategoryType)
+
+    @classmethod
+    def mutate(cls, root, info, name, id):
+        category = Category.objects.get(id=id)
+        category.name = name
+        category.save()
+
+        # to delete
+        # category.delete()
+        return CategoryMutation(category=category)
+
+
+class Mutation(graphene.ObjectType):
+    # update
+    # update_category = CategoryMutation.Field()
+    # insert
+    add_category = CategoryMutation.Field()
+
+
+schema = graphene.Schema(query=Query, mutation=Mutation)
